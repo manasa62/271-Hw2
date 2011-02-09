@@ -10,13 +10,14 @@ import java.util.LinkedList;
 
 public class Message implements Serializable{
 
-	public double[][] dtt;
+	public Integer[][] dtt;
 	String destID;
 	String srcID;
+	int srcPid;
 	public LinkedList<DicEntry> dicList = new LinkedList<DicEntry>();
 	
-	public Message(String dest, double[][] timetable, LinkedList<DicEntry> list){
-		this.dtt = timetable;
+	public Message(String dest, Integer[][] dtt2, LinkedList<DicEntry> list){
+		this.dtt = dtt2;
 		this.dicList = list;
 		this.destID = dest;
 	}
@@ -31,22 +32,14 @@ public class Message implements Serializable{
 	      byte [] data = bos.toByteArray();
 	      return data;
 	  }
-	
-	public Message toObject (byte[] bytes)
-	{
-	  Message obj = null;
-	  try {
-	    ByteArrayInputStream bis = new ByteArrayInputStream (bytes);
-	    ObjectInputStream ois = new ObjectInputStream (bis);
-	    obj = (Message)ois.readObject();
-	  }
-	  catch (IOException ex) {
-	   ex.printStackTrace();
-	  }
-	  catch (ClassNotFoundException ex) {
-	   ex.printStackTrace();
-	  }
-	  return obj;
+
+	public void setPid(int pid) {
+		this.srcPid = pid;
 	}
+	
+	public int getPid() {
+		return this.srcPid;
+	}
+	
 	
 }

@@ -31,7 +31,7 @@ public class RouterThread implements Runnable {
 
 
 	public void run() {
-		while(true){
+		
 		try {
 			this.thisConnection = new DatagramSocket(portNum);
 
@@ -60,7 +60,7 @@ public class RouterThread implements Runnable {
 
 			e2.printStackTrace();
 		}
-		}
+		
 
 	}
 
@@ -68,9 +68,12 @@ public class RouterThread implements Runnable {
 		Message msg = null;
 		byte[] buf = new byte[10000];
 		String[] msgparts = null;
+		System.out.println("In write to router q");
 
 		DatagramPacket recvdPkt = new DatagramPacket(buf, buf.length);
+		System.out.println("Recieved a packet");
 
+		while(true){
 		try {
 
 			thisConnection.receive(recvdPkt);
@@ -92,7 +95,7 @@ public class RouterThread implements Runnable {
 			msg.srcID = recvdPkt.getAddress().getHostName();
 		
 			router.getMsgQueue().add(msg);
-			try {
+			/*try {
 				buf = new byte[10000];
 				recvdPkt = new DatagramPacket(buf, buf.length);
 				thisConnection.receive(recvdPkt);
@@ -105,9 +108,8 @@ public class RouterThread implements Runnable {
 			}
 
 			msg = null;
-			msg = toObject(recvdPkt.getData());
-
-		
+			msg = toObject(recvdPkt.getData()); */
+		}
 
 	}
 

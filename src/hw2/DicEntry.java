@@ -21,7 +21,7 @@ public class DicEntry implements Serializable
 	
 	public String toString(){
 		String res = new String();
-		res = this.key+" "+this.value+" "+this.clock+" "+this.pid;
+		res = this.key+" "+this.value+" "+this.pid+" "+this.clock;
 		return res;
 		
 	}

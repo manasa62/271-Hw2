@@ -77,7 +77,7 @@ public class Router implements Runnable {
 
 	public void run() {
 		while (true) {
-			if (msgQueue.size() >= 2) {
+			if (msgQueue.size() >= 1) {
 
 				DatagramSocket requestSocket = null;
 				String message = null;

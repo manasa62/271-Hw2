@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 
-<project name="GFS" basedir=".">
+<project name="271-Hw2" basedir=".">
     <description>
         Builds, tests, and runs the project CS271-GFS
     </description>
@@ -54,7 +54,7 @@
     <target name="runLocalFileServer" depends="compile" description="run a File Server Locally">
         
         <!-- run computer -->
-        <java classname="part1.fileServer" fork="true">
+        <java classname="hw2.fileServer" fork="true">
             <arg value="localhost:${port}"/>
             <classpath>
                 <pathelement location="${build}/"/>
@@ -66,7 +66,7 @@
     <target name="runLocalRouter" description="runs Router Locally">
         
         
-        <java classname="part1.Router" fork="true">
+        <java classname="hw2.Router" fork="true">
             
             <classpath>
                 <pathelement location="${build}/"/>
@@ -80,8 +80,8 @@
     <target name="runLocalClient" description="runs Client on Locally">
         
         <!-- run remote space -->
-        <java classname="part1.Client" fork="true">
-            
+        <java classname="hw2.Client" fork="true">
+            <arg value="${pid}"/>
             <classpath>
                 <pathelement location="${build}/"/>
             </classpath>
