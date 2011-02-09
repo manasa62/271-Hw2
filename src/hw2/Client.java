@@ -21,14 +21,16 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Random;
 
+
+
 public class Client implements Runnable {
 
 	private int portNum;
-	Integer[][] dtt = new Integer[5][5];
-	int pid;
-	int clockCounter;
-	String dicName;
-	File dicFile;
+	public  Integer[][] dtt = new Integer[5][5];
+	private int pid;
+	private int clockCounter;
+	public String dicName;
+	public File dicFile;
 
 	public Client(int pid, int portNum) {
 		this.portNum = portNum;
@@ -57,6 +59,7 @@ public class Client implements Runnable {
 		String msg = null;
 
 		try {
+
 			requestSocket = new DatagramSocket();
 
 		} catch (IOException e) {
@@ -68,7 +71,7 @@ public class Client implements Runnable {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		String[] msgparts = msg.split(":", 2);
 
-		while (!msg.equals("bye-bye")) {
+		
 			System.out
 					.println("Enter the message and the destination to send in the format <Destination ID>:<message payload>");
 			System.out
@@ -84,7 +87,8 @@ public class Client implements Runnable {
 			writeToDictionary(d);
 			msgparts = msg.split(":", 2);
 			sendMessage(msgparts[0], d, requestSocket);
-		}
+		
+		requestSocket.close();
 		// sendMessage(msg, requestSocket);
 
 	}
@@ -106,66 +110,64 @@ public class Client implements Runnable {
 		boolean found = false;
 		String thisLine;
 		String[] lineParts = new String[4];
-		
+
 		file = new BufferedWriter(new FileWriter(this.dicFile, true));
 		file1 = new BufferedReader(new FileReader(this.dicFile));
 		while ((thisLine = file1.readLine()) != null) {
 			lineParts = thisLine.split(" ", 4);
-			if(lineParts[0].equals(d.key)){
+			if (lineParts[0].equals(d.key)) {
 				found = true;
 			}
 		}
-		if(!found){
-		file.append(d.toString() + "\n");
+		if (!found) {
+			file.append(d.toString() + "\n");
 		}
 		file.close();
 		file1.close();
-		
+
 	}
 
 	private void sendMessage(String dest, DicEntry d,
 			DatagramSocket requestSocket) throws IOException {
-		
-			LinkedList<DicEntry> list = new LinkedList<DicEntry>();
-			try {
-				list = getDicEntries(dest);
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			}
 
-			byte buf[] = new byte[10000];
-			
-			try {
-				System.out.println("Sending message --> " + d.key + "-"
-						+ d.value);
-
-				DatagramPacket datapkt = new DatagramPacket(buf, buf.length,
-						InetAddress.getByName(GFSConstants.routerName),
-						this.portNum);
-				
-				list.add(d);
-				Message msgObj = new Message(dest, this.dtt, list);
-				msgObj.setPid(this.pid);
-				datapkt.setData(msgObj.getBytes());
-
-				requestSocket.send(datapkt);
-				// System.out.println("client>" + msg);
-			} catch (IOException ioException) {
-				ioException.printStackTrace();
-			}
-			printTimeTable();
+		LinkedList<DicEntry> list = new LinkedList<DicEntry>();
+		try {
+			list = getDicEntries(dest);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
 		}
 
-	
+		byte buf[] = new byte[10000];
 
-	private void printTimeTable() {
-		for(int i=0;i<this.dtt.length;i++){
-			for(int j=0;j<this.dtt.length;j++){
-				System.out.print(this.dtt[i][j]+" ");
+		try {
+			System.out.println("Sending message --> " + d.key + "-" + d.value);
+
+			DatagramPacket datapkt = new DatagramPacket(buf, buf.length,
+					InetAddress.getByName(GFSConstants.routerName),
+					this.portNum);
+
+			list.add(d);
+			Message msgObj = new Message(dest, this.dtt, list);
+			msgObj.setPid(this.pid);
+			datapkt.setData(msgObj.getBytes());
+
+			requestSocket.send(datapkt);
+			// System.out.println("client>" + msg);
+		} catch (IOException ioException) {
+			ioException.printStackTrace();
+		}
+		
+	}
+
+	public static void printTimeTable(Integer dtt[][]) {
+		System.out.println("Local Time Table");
+		for (int i = 0; i < dtt.length; i++) {
+			for (int j = 0; j < dtt.length; j++) {
+				System.out.print(dtt[i][j] + " ");
 			}
 			System.out.println("\n");
 		}
-		
+
 	}
 
 	private LinkedList<DicEntry> getDicEntries(String dest) throws IOException {
@@ -178,10 +180,12 @@ public class Client implements Runnable {
 		file = new BufferedReader(new FileReader(this.dicFile));
 		while ((thisLine = file.readLine()) != null) {
 			lineParts = thisLine.split(" ", 4);
-			if(this.dtt[destId][Integer.parseInt(lineParts[2])] < Integer.parseInt(lineParts[3])){
-				list.add(new DicEntry(lineParts[0], lineParts[1], Integer.parseInt(lineParts[2]), Integer.parseInt(lineParts[3])));
+			if (this.dtt[destId][Integer.parseInt(lineParts[2])] < Integer
+					.parseInt(lineParts[3])) {
+				list.add(new DicEntry(lineParts[0], lineParts[1], Integer
+						.parseInt(lineParts[2]), Integer.parseInt(lineParts[3])));
 			}
-			
+
 		}
 		return list;
 	}
@@ -254,21 +258,83 @@ public class Client implements Runnable {
 
 	}
 
-	public static void main(String args[]) {
+	public static void main(String args[]) throws IOException {
 
 		int pid = Integer.parseInt(args[0]);
+		int ans = 1;
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
 		Client client = new Client(pid, GFSConstants.RouterSendPort);
 
-		System.out.println("The available clients are: C1, C2, C3, C4, C5");
-		System.out.println("The File Server is : FS");
-
+		while(true){
+		System.out.println("The available clients are: 0, 1, 2, 3, 4");
+		// System.out.println("The File Server is : FS");
+		System.out.println("Choose one of the following");
+		System.out.println("1: Send a message");
+		System.out.println("2: Display the local time table");
+		System.out.println("3: List keys in the local Dictionary");
+		System.out.println("4: Get the value for a given key");
 		try {
-			client.request();
-		} catch (IOException e) {
+			ans = Integer.parseInt(br.readLine());
+		} catch (IOException e1) {
 
-			e.printStackTrace();
+			e1.printStackTrace();
+		}
+
+		switch (ans) {
+		case 1:
+			client.request();
+			break;
+
+		case 2:
+			printTimeTable(client.dtt);
+			break;
+
+		case 3:
+			listKeys(client);
+			break;
+
+		case 4:
+			System.out.println("Enter the key: ");
+			String key = br.readLine();
+			getValue(key, client);
+			break;
+			
+		default:
+			client.request();
+			break;
+
+		}
 		}
 	}
 
+	private static void getValue(String key, Client client) throws IOException {
+		BufferedReader file1;
+		String thisLine;
+		String[] lineParts = new String[4];
+		
+		file1 = new BufferedReader(new FileReader(client.dicFile));
+		while ((thisLine = file1.readLine()) != null) {
+			lineParts = thisLine.split(" ", 4);
+			if (lineParts[0].equals(key)) {
+				System.out.println("Key : "+ key+" Value: "+ lineParts[1]);
+			}
+	}
+	}
+
+	private static void listKeys(Client client) throws IOException {
+		
+		BufferedReader file1;
+		String thisLine;
+		String[] lineParts = new String[4];
+		
+		file1 = new BufferedReader(new FileReader(client.dicFile));
+		System.out.println("List of Keys:");
+		while ((thisLine = file1.readLine()) != null) {
+			lineParts = thisLine.split(" ", 4);
+			System.out.println(lineParts[0]);
+				
+	}
+
+	}
 }
