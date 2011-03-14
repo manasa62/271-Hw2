@@ -1,3 +1,6 @@
+/** @author Manasa Chandrashekar
+ * 			DivyaShree Hassan Ravindrakumar
+ */
 package hw2;
 
 import java.io.BufferedReader;
@@ -29,9 +32,11 @@ public class RouterThread implements Runnable {
 		this.portNum = portNum;
 	}
 
-
+	/**
+	 * Accepts messages from clients
+	 */
 	public void run() {
-		
+
 		try {
 			this.thisConnection = new DatagramSocket(portNum);
 
@@ -60,10 +65,14 @@ public class RouterThread implements Runnable {
 
 			e2.printStackTrace();
 		}
-		
 
 	}
 
+	/**
+	 * Writes messages to a local router message queue
+	 * 
+	 * @throws UnknownHostException
+	 */
 	private void writeToQueue() throws UnknownHostException {
 		Message msg = null;
 		byte[] buf = new byte[10000];
@@ -73,42 +82,38 @@ public class RouterThread implements Runnable {
 		DatagramPacket recvdPkt = new DatagramPacket(buf, buf.length);
 		System.out.println("Recieved a packet");
 
-		while(true){
-		try {
+		while (true) {
+			try {
 
-			thisConnection.receive(recvdPkt);
-
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
-
-		msg = toObject(recvdPkt.getData());
-
-	/*	msgparts = new String[2];
-		msgparts = msg.split(":", 2);*/
-
-		System.out.println("Packet destined to " + msg.destID
-				+ "recieved from " + recvdPkt.getAddress().getHostName());
-
-		
-		//	String newmsg = msg + ":" + recvdPkt.getAddress().getHostName();
-			msg.srcID = recvdPkt.getAddress().getHostName();
-		
-			router.getMsgQueue().add(msg);
-			/*try {
-				buf = new byte[10000];
-				recvdPkt = new DatagramPacket(buf, buf.length);
 				thisConnection.receive(recvdPkt);
 
-				//printRouterClientTable();
-			}
-
-			catch (IOException e1) {
+			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
 
-			msg = null;
-			msg = toObject(recvdPkt.getData()); */
+			msg = toObject(recvdPkt.getData());
+
+			/*
+			 * msgparts = new String[2]; msgparts = msg.split(":", 2);
+			 */
+
+			System.out.println("Packet destined to " + msg.destID
+					+ "recieved from " + recvdPkt.getAddress().getHostName());
+
+			// String newmsg = msg + ":" + recvdPkt.getAddress().getHostName();
+			msg.srcHostName = recvdPkt.getAddress().getHostName();
+
+			router.getMsgQueue().add(msg);
+			/*
+			 * try { buf = new byte[10000]; recvdPkt = new DatagramPacket(buf,
+			 * buf.length); thisConnection.receive(recvdPkt);
+			 * 
+			 * //printRouterClientTable(); }
+			 * 
+			 * catch (IOException e1) { e1.printStackTrace(); }
+			 * 
+			 * msg = null; msg = toObject(recvdPkt.getData());
+			 */
 		}
 
 	}
@@ -132,22 +137,19 @@ public class RouterThread implements Runnable {
 		System.out.println(router.getMsgQueue().toString());
 
 	}
-	
-	public Message toObject (byte[] bytes)
-	{
-	  Message obj = null;
-	  try {
-	    ByteArrayInputStream bis = new ByteArrayInputStream (bytes);
-	    ObjectInputStream ois = new ObjectInputStream (bis);
-	    obj = (Message)ois.readObject();
-	  }
-	  catch (IOException ex) {
-	   ex.printStackTrace();
-	  }
-	  catch (ClassNotFoundException ex) {
-	   ex.printStackTrace();
-	  }
-	  return obj;
+
+	public Message toObject(byte[] bytes) {
+		Message obj = null;
+		try {
+			ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
+			ObjectInputStream ois = new ObjectInputStream(bis);
+			obj = (Message) ois.readObject();
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		} catch (ClassNotFoundException ex) {
+			ex.printStackTrace();
+		}
+		return obj;
 	}
 
 	public void start() {

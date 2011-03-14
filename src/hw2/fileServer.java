@@ -39,7 +39,7 @@ public class fileServer {
 
 	public static void main(String args[]) throws IOException {
 
-		new fileServer(GFSConstants.FileServerPort).listen();
+		new fileServer(Constants.FileServerPort).listen();
 
 	}
 

@@ -1,3 +1,6 @@
+/** @author Manasa Chandrashekar
+ * 			DivyaShree Hassan Ravindrakumar
+ */
 package hw2;
 
 import java.io.BufferedReader;
@@ -19,6 +22,11 @@ import java.util.NoSuchElementException;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.LinkedBlockingQueue;
 
+/**
+ * 
+ * Implements the router functionality
+ * 
+ */
 public class Router implements Runnable {
 
 	public enum CLIENTSTATE {
@@ -66,6 +74,9 @@ public class Router implements Runnable {
 		this.clientTable = clientTable;
 	}
 
+	/**
+	 * Spawn thread which gets messages from clients
+	 */
 	public void listen() {
 
 		RouterThread w;
@@ -75,6 +86,10 @@ public class Router implements Runnable {
 
 	}
 
+	/**
+	 * Separate thread which sends out messages received from clients to their
+	 * destination clients
+	 */
 	public void run() {
 		while (true) {
 			if (msgQueue.size() >= 1) {
@@ -93,7 +108,7 @@ public class Router implements Runnable {
 				while (!this.msgQueue.isEmpty()) {
 					try {
 						msg = this.msgQueue.remove();
-						//System.out.println("Trying to send message :" + msg);
+						// System.out.println("Trying to send message :" + msg);
 						try {
 							sendMessage(msg, requestSocket);
 						} catch (IOException e) {
@@ -124,8 +139,8 @@ public class Router implements Runnable {
 		DatagramPacket newpkt = null;
 		InetAddress ip = null;
 		try {
-			//msgparts = msg.split(":", 3);
-			
+			// msgparts = msg.split(":", 3);
+
 			if (Router.clientStatus.get(msg.destID).equals(CLIENTSTATE.UP)) {
 				String hostname = Router.clientTable.get(msg.destID);
 				try {
@@ -136,15 +151,13 @@ public class Router implements Runnable {
 				}
 				if (msg.destID.equals("FS")) {
 					newpkt = new DatagramPacket(buf, buf.length, ip,
-							GFSConstants.FileServerPort);
+							Constants.FileServerPort);
 				} else {
 					newpkt = new DatagramPacket(buf, buf.length, ip,
-							GFSConstants.ClientPort);
+							Constants.ClientPort);
 				}
-				//String newmsg = msgparts[1] + ":" + msgparts[2];
-				
-				
-				
+				// String newmsg = msgparts[1] + ":" + msgparts[2];
+
 				newpkt.setData(msg.getBytes());
 				requestSocket.send(newpkt);
 
@@ -180,6 +193,9 @@ public class Router implements Runnable {
 			input = br.readLine();
 
 		}
+		
+		Constants.NO_OF_NODES = Router.clientTable.size();
+		System.out.println("Client table size "+ Router.clientTable.size()+" constant "+Constants.NO_OF_NODES);
 
 		Iterator iterator = Router.clientTable.keySet().iterator();
 		System.out.println("Routing table:");
@@ -193,7 +209,7 @@ public class Router implements Runnable {
 
 		startStatusMaintainThread();
 
-		new Router(GFSConstants.RouterSendPort).listen();
+		new Router(Constants.RouterSendPort).listen();
 
 	}
 

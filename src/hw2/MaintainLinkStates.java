@@ -1,3 +1,6 @@
+/** @author Manasa Chandrashekar
+ * 			DivyaShree Hassan Ravindrakumar
+ */
 package hw2;
 
 import java.io.BufferedReader;
@@ -7,6 +10,12 @@ import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Iterator;
 
+/**
+ * 
+ * Maintainance of the status of various links in the system.The link status can
+ * be updated and modified
+ * 
+ */
 public class MaintainLinkStates implements Runnable {
 	public MaintainLinkStates() {
 
@@ -81,7 +90,6 @@ public class MaintainLinkStates implements Runnable {
 				e1.printStackTrace();
 			}
 
-			
 		}
 	}
 
